@@ -16,119 +16,150 @@ class ViewController: UIViewController {
     @IBOutlet weak var button2: UIButton!
     @IBOutlet weak var button3: UIButton!
     @IBOutlet weak var button4: UIButton!
-    
-    @IBOutlet weak var correctIncorrect: UILabel!
+    //@IBOutlet weak var correctIncorrect: UILabel!
+    @IBOutlet weak var partView: UIView!
+    @IBOutlet weak var playAgain: UIButton!
+    @IBOutlet weak var count: UILabel!
+    @IBOutlet weak var progress: UIProgressView!
+    @IBOutlet var mainView: UIView!
+    @IBOutlet weak var quizzCompleteLAbel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var scoreText: UILabel!
     
     var buttons = [UIButton]()
     var game = Game()
     var timer = Timer()
-    let intervalInSeconds = 15
+    //let intervalInSeconds = 15
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         buttons = [button1, button2, button3, button4]
-        defaultUiView()
         displayQuestion()
-        game.collectedIndexes = []
     }
     
-    func displayQuestion() // DOES NOT WORK !!!
+    func defaultStyle()
     {
+        for button in buttons
+        {
+            button.layer.borderWidth = 2.5
+            button.layer.borderColor = UIColor.black.cgColor
+            button.isEnabled = true
+            button.isHidden = false
+            button.backgroundColor = UIColor(displayP3Red: 243/255, green: 243/255, blue: 243/255, alpha: 1.0)
+        }
+        //correctIncorrect.isHidden = true
+        playAgain.isHidden = true
+        count.isHidden = false
+        progress.isHidden = true // DO NOT FORGET TO DELETE THIS STRING!
+        scoreLabel.isHidden = true
+        quizzCompleteLAbel.isHidden = true
+        scoreText.isHidden = true
+        textPosition.isHidden = false
+        partView.isHidden = false
+        mainView.backgroundColor = UIColor(displayP3Red: 244/255, green: 216/255, blue: 142/255, alpha: 1.0)
+    }
+    
+    func displayQuestion()
+    {
+        defaultStyle()
         game.generateQuestion()
         textPosition.text = game.questionToDisplay.question
-        //displayButtonTitles()
-        correctIncorrect.isHidden = true
+        displayButtonTitles()
+        //count.text = "\(game.questionsAsked) / \(game.questionsPerRound)"
+        print(game.questionsAsked)
+        count.text = "\(game.questionsAsked) / \(game.questionsPerRound)"
     }
     
     func displayButtonTitles()
     {
-        
         for button in buttons
         {
-            var questionToDisplay = game.questionToDisplay
-            var index = GKRandomSource.sharedRandom().nextInt(upperBound: questionToDisplay.answerChoices.count)
-            
-            while game.collectedIndexes.contains(index)
-            {
-                index = GKRandomSource.sharedRandom().nextInt(upperBound: questionToDisplay.answerChoices.count)
-            }
-            
-            game.collectedIndexes.append(index)
-            
-            button.setTitle(questionToDisplay.answerChoices[index], for: .normal)
+                var choices = game.questionToDisplay.answerChoices
+                let index = GKRandomSource.sharedRandom().nextInt(upperBound: choices.count)
+                button.setTitle(choices[index], for: .normal)
+                choices.remove(at: index)
+                button.isEnabled = true
         }
+        print(game.questionToDisplay.answerChoices)
     }
     
     @IBAction func checkAnswers(_ sender: UIButton) {
-        correctIncorrect.isHidden = false
+        for button in buttons
+        {
+            button.isEnabled = false
+        }
+        //correctIncorrect.isHidden = false
         game.questionsAsked += 1
-        print("Questions Asked \(game.questionsAsked)") // PRINT
         if sender.currentTitle == game.questionToDisplay.correctAnswer
         {
             sender.flash()
-            correctIncorrect.text = "Correct"
-            correctIncorrect.textColor = UIColor.green
+            //correctIncorrect.text = "Correct!"
+            //correctIncorrect.textColor = UIColor(displayP3Red: 60/255, green: 189/255, blue: 192/255, alpha: 1.0)
             game.correctAnswers += 1
-            print("Correct Answers \(game.correctAnswers)") // PRINT
-            sender.backgroundColor = UIColor.green
+            sender.backgroundColor = UIColor(displayP3Red: 60/255, green: 189/255, blue: 192/255, alpha: 1.0)
         }
             else
         {
             sender.shake()
             sender.backgroundColor = UIColor.red
-           correctIncorrect.text = "Incorrect"
-            correctIncorrect.textColor = UIColor.red
+           //correctIncorrect.text = "Incorrect"
+            //correctIncorrect.textColor = UIColor.red
             print("Incorrect Answer") // PRINT
+            
+            for button in buttons
+            {
+                if button.currentTitle == game.questionToDisplay.correctAnswer
+                {
+                    button.backgroundColor = UIColor(displayP3Red: 60/255, green: 189/255, blue: 192/255, alpha: 1.0)
+                }
+                
+            }
             
         }
         
+        count.text = "\(game.questionsAsked) / \(game.questionsPerRound)"
         loadNextRoundWithDelay(seconds: 2)
+    }
+    
+    @IBAction func playAgainAction(_ sender: UIButton)
+    {
+        displayQuestion()
+        game.questionsAsked = 0
+        
         
     }
-    
-    @IBAction func nextQuestionCheck() {
-        displayQuestion()
-        print("Previous index is - \(game.collectedIndexes)")
-        print("Selected index is - \(game.selectedIndex)")
 
-    }
-    
-    
-    func defaultUiView()
-    {
-        textPosition.textColor = UIColor.white
-        correctIncorrect.textColor = UIColor.white
-        for button in buttons
-        {
-            button.layer.cornerRadius = 15
-            button.setTitleColor(UIColor.white, for: .normal)
-        }
-    }
-    
     func displayScore()
     {
         for button in buttons
         {
             button.isHidden = true
         }
+        playAgain.isHidden = false
+        textPosition.isHidden = true
+        playAgain.layer.borderWidth = 2
+        playAgain.layer.borderColor = UIColor.black.cgColor
+        //correctIncorrect.isHidden = true
+        count.isHidden = true
+        partView.isHidden = true
+        mainView.backgroundColor = UIColor(displayP3Red: 60/255, green: 189/255, blue: 192/255, alpha: 1.0)
+        quizzCompleteLAbel.isHidden = false
+        scoreLabel.isHidden = false
+        scoreLabel.text = "\(100 * game.correctAnswers / game.questionsPerRound)%"
+        scoreText.isHidden = false
         
-        textPosition.text = "Great, you have finished. Your score is \(game.correctAnswers) of \(game.questionsPerRound)"
-        correctIncorrect.isHidden = true
     }
     
     func nextRound()
     {
-        print("Timer works")
-        /*
-         if game.questionsAsked == game.questionsPerRound
+        if game.questionsAsked == game.questionsPerRound
         {
-            displayScore()
-        } else {
-         */
-            displayQuestion()
-        //}
-    
+        displayScore()
+        } else
+        {
+        displayQuestion()
+        defaultStyle()
+        }
     }
     
     func loadNextRoundWithDelay(seconds: Int) {

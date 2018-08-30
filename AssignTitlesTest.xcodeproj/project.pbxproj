@@ -60,6 +60,7 @@
 		5877DAAC213590850083A8F3 /* AssignTitlesTest */ = {
 			isa = PBXGroup;
 			children = (
+				5877DAC321368BC80083A8F3 /* ButtonExtension.swift */,
 				5877DAAD213590850083A8F3 /* AppDelegate.swift */,
 				5877DABF213597430083A8F3 /* GameModel.swift */,
 				5877DAC1213597AF0083A8F3 /* Game.swift */,
@@ -68,7 +69,6 @@
 				5877DAB4213590890083A8F3 /* Assets.xcassets */,
 				5877DAB6213590890083A8F3 /* LaunchScreen.storyboard */,
 				5877DAB9213590890083A8F3 /* Info.plist */,
-				5877DAC321368BC80083A8F3 /* ButtonExtension.swift */,
 			);
 			path = AssignTitlesTest;
 			sourceTree = "<group>";
